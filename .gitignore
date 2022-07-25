@@ -1,0 +1,13 @@
+.i2c_rpi_accel.ko.cmd
+.i2c_rpi_accel.mod.cmd
+.i2c_rpi_accel.mod.o.cmd
+.i2c_rpi_accel.o.cmd
+.Module.symvers.cmd
+.modules.order.cmd
+i2c_rpi_accel.ko
+i2c_rpi_accel.mod
+i2c_rpi_accel.mod.c
+i2c_rpi_accel.mod.o
+i2c_rpi_accel.o
+Module.symvers
+modules.order
