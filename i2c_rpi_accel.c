@@ -23,7 +23,7 @@ struct ioaccel_dev {
 /* poll function */
 static void ioaccel_poll(struct input_dev * pl_dev)
 {
-	struct ioaccel_dev * ioaccel = pl_dev->ff->private;
+	struct ioaccel_dev * ioaccel = input_get_drvdata(pl_dev);
 	int val = 0;
 	val = i2c_smbus_read_byte_data(ioaccel->i2c_client, OUT_X_MSB);
 
@@ -35,6 +35,8 @@ static void ioaccel_poll(struct input_dev * pl_dev)
 	}
 
 	input_sync(ioaccel->polled_input);
+
+	dev_info(&ioaccel->i2c_client->dev, "ioaccel_poll() is called.\n");
 }
 
 static int ioaccel_probe(struct i2c_client * client,
@@ -48,29 +50,25 @@ static int ioaccel_probe(struct i2c_client * client,
 
 	/* allocate private structure for new device */
 	ioaccel = devm_kzalloc(&client->dev, sizeof(struct ioaccel_dev), GFP_KERNEL);
-
 	/* Associate client->dev with ioaccel private structure */
 	i2c_set_clientdata(client, ioaccel);
-
 	i2c_smbus_write_byte_data(client, POWER_CTL, PCTL_MEASURE);
-
+	
 	/* Allocate the struct input_polled_dev */
 	ioaccel->polled_input = devm_input_allocate_device(&client->dev);
-	//ioaccel->polled_input = input_allocate_polled_device();
-
+	
 	/* Initialize polled input */
 	ioaccel->i2c_client = client;
-	// ioaccel->polled_input->private = ioaccel;
-    ioaccel->polled_input->ff->private = ioaccel;
-	// ioaccel->polled_input->poll_interval = 50;
-    input_set_poll_interval(ioaccel->polled_input, 50);
-    // ioaccel->polled_input->poll = ioaccel_poll;
-    input_setup_polling(ioaccel->polled_input, ioaccel_poll);
+	
+   	input_set_drvdata(ioaccel->polled_input, ioaccel);
 
 	ioaccel->polled_input->dev.parent = &client->dev;
-
 	ioaccel->polled_input->name = "IOACCEL keyboard";
 	ioaccel->polled_input->id.bustype = BUS_I2C;
+
+	input_setup_polling(ioaccel->polled_input, ioaccel_poll);
+	input_set_poll_interval(ioaccel->polled_input, 500);
+    
 
 	/* Set event types */
 	set_bit(EV_KEY, ioaccel->polled_input->evbit);
@@ -79,7 +77,7 @@ static int ioaccel_probe(struct i2c_client * client,
 	/* Register the device, now the device is global until being unregistered*/
 	// input_register_polled_device(ioaccel->polled_input);
     status = input_register_device(ioaccel->polled_input);
-	
+	dev_info(&client->dev, "input_register_device\n");
 	if (status != 0) {
 		pr_err("could not register the input_register_device");
 		return status;
