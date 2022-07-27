@@ -1,4 +1,6 @@
-
+/*
+20220727버전 수정
+*/
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/i2c.h>
