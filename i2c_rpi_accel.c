@@ -1,6 +1,5 @@
 /*
 20220727버전 수정
-test master
 */
 #include <linux/module.h>
 #include <linux/fs.h>
