@@ -33,7 +33,7 @@ static void ioaccel_poll(struct input_dev * pl_dev)
 
 	if ( (val > 0xc0) && (val < 0xff) ) {
 		input_event(ioaccel->polled_input, EV_KEY, KEY_1, 1);
-	} else {
+	} else {vxc
 		input_event(ioaccel->polled_input, EV_KEY, KEY_1, 0);
 	}
 
