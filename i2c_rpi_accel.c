@@ -30,16 +30,18 @@ static void ioaccel_poll(struct input_dev * pl_dev)
 	int val = 0;
 	val = i2c_smbus_read_byte_data(ioaccel->i2c_client, OUT_X_MSB);
 
-
-	if ( (val > 0xc0) && (val < 0xff) ) {
+	dev_info(&ioaccel->i2c_client->dev, "EV_KEY VAULE is %d.\n", val);
+	if ( (val > 0xc0) && (val <= 0xff) ) {
+		//input_report_key(ioaccel->polled_input, EV_KEY, 1);
 		input_event(ioaccel->polled_input, EV_KEY, KEY_1, 1);
-	} else {vxc
+		//dev_info(&ioaccel->i2c_client->dev, "EV_KEY 1.\n");
+	} else {
+		//input_report_key(ioaccel->polled_input, EV_KEY, 0);
 		input_event(ioaccel->polled_input, EV_KEY, KEY_1, 0);
+		//dev_info(&ioaccel->i2c_client->dev, "EV_KEY 0.\n");
 	}
 
 	input_sync(ioaccel->polled_input);
-
-	dev_info(&ioaccel->i2c_client->dev, "ioaccel_poll() is called.\n");
 }
 
 static int ioaccel_probe(struct i2c_client * client,
